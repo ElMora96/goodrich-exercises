@@ -99,7 +99,7 @@ class Tree:
 					fringe.enqueue(c)
 
 	def positions(self):
-	"""Generate an iteration of the tree's positions - Preorder Traversal default"""
+		"""Generate an iteration of the tree's positions - Preorder Traversal default"""
 		return self.preorder() #Directly return generator
 
 #---------------Nonpublic Methods------------------------------------------------------
@@ -153,6 +153,29 @@ class BinaryTree(Tree):
 			yield self.left(p)
 		if self.right(p) is not None:
 			yield self.right(p)
+
+	def inorder(self):
+		"""Generate an inorder iteration of positions in the tree"""
+		if not self.is_empty():
+			for p in self._subtree_inorder(self.root()):
+				yield p
+
+	def positions(self):
+		"""Generate an iteration of tree's positions.
+		Override inherited method to perform inorder traversal."""
+		return self.inorder()
+
+#--------------------------------------------Nonpublic methods---------------------------------
+	def _subtree_inorder(self, p):
+		"""Generate an inorder iteration of positions in the subtree rooted at p"""
+		if self.left(p) is not None: #if left child exists
+			for other in self._subtree_inorder(self.left(p)): #then traverse its subtree
+				yield other
+		yield p #visit p
+		if self.right(p) is not None: #if right child exists
+			for other in self._subtree_inorder(self.right(p)): #Then traverse its subtree
+				yield other
+
 
 
 class LinkedBinaryTree(BinaryTree):
@@ -253,7 +276,7 @@ class LinkedBinaryTree(BinaryTree):
 	def _add_left(self, p, e):
 		"""Create left child for node P, storing element e.
 		Return new position. Raise ValueError if p is invalid
-		or if p alreadt has left child.
+		or if p already has left child.
 		"""
 		node = self._validate(p) #Raises ValueError if p is invalid
 		if node._left is not  None:
