@@ -81,9 +81,9 @@ class PositionalList(_DoublyLinkedBase):
 			return not self == other 
 
 	def _validate(self, p):
-		"""Utility method. Return Node at Position p, or raise appropiate Error if invalid"""
+		"""Utility method. Return Node at Position p, or raise appropriate Error if invalid"""
 		if not isinstance(p, self.Position):
-			raise TypeError("p must be a Position instance")
+			raise TypeError("p must be a Position type")
 		if p._container is not self:
 			raise  ValueError("p does not belong to this PositionalList")
 		if p._node._next == p._node._prev == None: #Recall _delete_node in base class sets _prev and _next to None 
