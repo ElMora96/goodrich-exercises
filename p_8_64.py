@@ -1,5 +1,6 @@
 """Implement the binary tree ADT using the array-based representation described in Section 8.3.2."""
 from libs.tree import BinaryTree #Import previoulsy implemented binary tree ABC
+from numpy import floor
 
 class ArrayBinaryTree(BinaryTree):
 	"""Array-based representation of a Binary Tree (concrete).
@@ -10,8 +11,7 @@ class ArrayBinaryTree(BinaryTree):
 		def __init__(self, container, node):
 			"""Constructor should no be invoked by user"""
 			self._container = container #Pointer to wrapper tree object
-			self._node = node
-			#self._numbering = container._level_numbering(self) #Integer representing level numbering
+			self._numbering = container._level_numbering(self) #Integer representing level numbering
 
 		def element(self):
 			"""Return element corresponding to this position"""
@@ -19,24 +19,33 @@ class ArrayBinaryTree(BinaryTree):
 
 		def __eq__(self, other):
 			"""Return True if self and other represent same position in tree"""
-			return type(self) == type(other) and self._numbering == other._numbering
+			return type(self) == type(other) and self._container == other._container and self._numbering == other._numbering
 
 		def  __ne__(self, other):
 			"""Return True if self and other represent different positions"""
 			return not self == other
 
+	def _make_position(self, numbering):
+		"""Return position instance corrisponding to given numbering"""
+		return self.Position(self, numbering)
+
 	def _level_numbering(self, p):
-		"""Function for the numbering of positions in the tree"""
+		"""Function for the numbering of Positions p in the tree"""
 		if self.is_root(p):
 			return 0 #Return zero if root node
-		pass
+		else:
+			current_numbering = p._numbering #This position num
+			parent_numbering = floor((current_numbering - 1)/2)
+			q = self._make_position(parent_numbering)
+			if current_numbering % 2 == 1: #If left child
+				return 2 * self._level_numbering(q) + 2 #Recursive call
+			else: #If right child
+				return 2 * self._level_numbering(q) + 2 #Recursive call
+
 	def _validate(self, p):
 		"""Utility to check validity of position"""
-		raise NotImplementedError("Position Validation Utility not yet implemented")
+		raise  NotImplementedError("todo")
 	
-	def _make_position(self, node):
-		"""Return Position instance corresponding to given element"""
-
 	#--------------BinaryTree Constructor---------------------------------------
 	def __init__(self):
 		"""Create an empty tree"""
@@ -56,12 +65,26 @@ class ArrayBinaryTree(BinaryTree):
 			return 0
 
 	def left(self, p):
-		"""Return position representing p's left child (or None)"""
-		return 2 * self._level_numbering(p) + 1
+		"""Return position representing p's left child"""
+		return self._make_position(2 * p + 1)
 
 	def right(self, p):
-		"""Return position representing p's right child (or None)"""
-		return 2* self._level_numbering(p) + 2
+		"""Return position representing p's right child"""
+		return self._make_position(2 * p + 2)
+
+	def parent(self, p):
+		"""Return position representing p's parent"""
+		return self._make_position(floor((p - 1)/2))
+
+	def num_children(self, p):
+		"""Return number of children of Position p"""
+		current = p._numbering
+		count = 0
+		if self._array[2*current + 1] is not None: #Left child exists
+			count += 1
+		if self._array[2*current + 2] is not None: #Right child exists
+			count += 1
+		return count
 
 	#--------------------------Public Mutators----------------------------------
 	def add_root(self, e):
