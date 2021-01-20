@@ -153,7 +153,7 @@ class CircularQueue:
 		if self._size == 1:
 			self._tail = None #Set tail to None if we're removing the only element in queue
 		else:
-			self._tail._next = old_head._next
+			self._tail._next = old_head._next #bypass the old head
 		self._size -= 1 #Decrease queue size
 		return old_head._data
 
@@ -161,6 +161,14 @@ class CircularQueue:
 		"""Add element to the back of the queue"""
 		new_node = self._Node(e, None)
 		if self.is_empty():
-			self._tail = new_node
+			new_node._next = new_node #Initialize queue circularly
 		else:
-			new_node._next = self._tail
+			new_node._next = self._tail._next #New node links old head
+			self._tail._next = new_node #Old tail links new node
+		self._tail = new_node #New node becomes new tail
+		self._size += 1 #Increase queue size
+
+	def rotate(self):
+		"""Rotate front element to the back of the queue"""
+		if len(self) > 0:
+			self._tail = self._tail._next
