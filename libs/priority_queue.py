@@ -86,3 +86,79 @@ class SortedPriorityQueue(PriorityQueueBase):
 		"""Return and remove tuple (k, v) with minimum key k"""
 		item = self._data.delete(self._data.first()) #Minimum element is the first
 		return (item._key, item._value)
+
+
+class HeaPriorityQueue(PriorityQueueBase): #Recall _Item is defined in base class
+	"""A min-oriented priority queue implemented using a heap"""
+	#--------------------------Nonpublic Methods-------------------------
+	def _parent(self, j):
+		return (j-1)//2
+
+	def _left(self, j):
+		return 2*j + 1
+
+	def _right(self, j);
+		return 2*j + 2
+
+	def _has_left(self, j):
+		return self._left(j) < len(self._data) #Is index before end of the array?
+
+	def _has_right(self, j):
+		return self._right(j) < len(self._data) #Is index before end of the array?
+
+	def _swap(self, i, j):
+		"""Swap items at positions i and j of the array"""
+		self._data[i], self._data[j] = self._data[j], self._data[i]
+
+	#looks smirnoff - to be corrected
+	def _upheap(self, j):
+		"""Recursive upheap to insert new elements. 
+		Swaps items until key order is restored"""
+		parent = self._parent(j)
+		if j > 0 and  self._data[j] < self._data[parent]:
+			self._swap(j, parent)
+			self._upheap(parent)
+
+	def _downheap(self, j):
+		if self._has_left(j):
+			left = self._left(j)
+			small_child = left #Although right could be smaller
+			if self._has_right(j):
+				right = self._right(j)
+				if self._data[right] < self._data[left]:
+					small_child = right
+			if self._data[small_child] < self._data[j]:
+				self._swap(small_child, j)
+				self._downheap(small_child) #recur at position of smallest child
+
+	#----------------------------------Public Methods---------------------------------
+	def __init__(self):
+		"""Create empty priority queue"""
+		self._data = []
+
+	def __len__(self):
+		"""Return number of items in priority queue"""
+		return len(self._data)
+
+	def add(self, key, value):
+		"""add a key-value pair to priority queue"""
+		self._data.append(self._Item(key, value))
+		self._upheap(len(self._data) -1) #upheap newly added position
+
+	def min(self):
+		"""Return but do not remove tuple (k,v) with minimum key k.
+		Raise Empty if queue is empty"""
+		if self.is_empty():
+			raise  Empty("Priority Queue is empty")
+		item = self._data[0]
+		return (item._key, item._value)
+
+	def remove_min(self):
+		""""Return and remove tuple (k,v) with minimum key k.
+		Raise empty if queue is empty."""
+		if self.is_empty():
+			raise  Empty("Priority Queue is empty")
+		self._swap(0, len(data) - 1) #Put element at the end
+		item = self._data.pop() #remove it from array
+		self._downheap(0) #Fix new root
+		return (item._key, item._value)
