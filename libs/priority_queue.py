@@ -88,7 +88,7 @@ class SortedPriorityQueue(PriorityQueueBase):
 		return (item._key, item._value)
 
 
-class HeaPriorityQueue(PriorityQueueBase): #Recall _Item is defined in base class
+class HeapPriorityQueue(PriorityQueueBase): #Recall _Item is defined in base class
 	"""A min-oriented priority queue implemented using a heap"""
 	#--------------------------Nonpublic Methods-------------------------
 	def _parent(self, j):
