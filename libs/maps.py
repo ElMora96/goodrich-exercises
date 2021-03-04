@@ -181,3 +181,95 @@ class ProbeHashMap(HashMapBase):
 			self._n += 1 #Increase size
 		else:
 			self._table[s]._value = v #overwrite existing item
+
+	def __iter__(self):
+		for j in range(len(self._table)):
+			if not self._is_available(j):
+				yield self._table[j]._key
+
+
+class  SortedTableMap(MapBase):
+	"""Map implementation via sorted table"""
+
+	#---------------------------------Nonpublic Methods---------------------------------
+	def _find_index(self, k, low, high):
+		"""Return index of the leftmost item with key greater than or equal to k.
+			Return high + 1 if no such item qualifies.
+
+			That is, j will be returned such that:
+			all items of slice table[low:j] have key < k
+			all items of slice table[j:high+1] have key >= k
+		"""
+		if high < low:
+			return high + 1 #No element qualifies
+		else:
+			mid = (low + high) // 2
+			if k == self._table[mid]._key:
+				return mid
+			elif k < self._table[mid]._key:
+				self._find_index(k, low, mid - 1) #notice might return mid
+			else:
+				self._find_index(k, mid + 1, high)
+
+
+	#----------------------------------Public Methods-----------------------------------
+	def __init__(self):
+		"""Create empty table"""
+		self._table = []
+
+	def __len__(self):
+		"""Return number of stored entries"""
+		return len(self._table)
+
+	def __getitem__(self, k):
+		"""Return value associated with key k.
+		Raise KeyError if not found"""
+		j = self._find_index(k, 0, len(self) - 1)
+		if j == len(self) or self._table[j]._key != j:
+			raise KeyError('Key Error ' + repr(k))
+		return self._table[j]._value
+
+	def __setitem__(self, k, v):
+		"""Assign value v to key k; overwriting if k is already present in map"""
+		j = self._find_index(k, 0, len(self) - 1) 
+		if j < len(self) and self._table[j]._key == k:
+			self._table[j]._value = v #Overwrite
+		else:
+			self._table.insert(j, self._Item(k, v)) #Add new element
+
+	def __delitem__(self, k):
+		"""Delete item associated with key k.
+		Raise KeyError if not found."""
+		j = self._find_index(k, 0, len(self) - 1)
+		if j == len(self) or self._table[j]._key != j:
+			raise KeyError('Key Error ' + repr(k))
+		self._table.pop(j) #Remove Item
+
+	def __iter__(self):
+		"""Iterate over keys stored in table (min to max)"""
+		for item in self._table:
+			yield item._key
+
+	def __reversed__(self):
+		"""Iterate over keys stored in table (max to min)"""
+		for item in reversed(self._table):
+			yield item._key
+
+
+
+
+
+
+
+
+
+
+
+###à########################UNIT TEST######################################
+if __name__ == "__main__":
+	test = SortedTableMap()
+	test[23] = 45
+	test[1] = 22
+	test[47] = 12\
+	#del test["a"]
+	print(list(iter(test)))
