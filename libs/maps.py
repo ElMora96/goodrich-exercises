@@ -207,9 +207,9 @@ class  SortedTableMap(MapBase):
 			if k == self._table[mid]._key:
 				return mid
 			elif k < self._table[mid]._key:
-				self._find_index(k, low, mid - 1) #notice might return mid
+				return self._find_index(k, low, mid - 1) #notice might return mid
 			else:
-				self._find_index(k, mid + 1, high)
+				return self._find_index(k, mid + 1, high)
 
 
 	#----------------------------------Public Methods-----------------------------------
@@ -255,21 +255,64 @@ class  SortedTableMap(MapBase):
 		for item in reversed(self._table):
 			yield item._key
 
+	def find_min(self):
+		"""Return (key, value) tuple with minimun key (or None if empty)"""
+		if len(self) > 0:
+			return (self._table[0]._key, self._table[0]._value)
+		else:
+			return None
+			
+	def find_max(self):
+		"""Return (key, value) tuple with maximun key (or None if empty)"""
+		if len(self) > 0:
+			return (self._table[-1]._key, self._table[-1]._value)
+		else:
+			return None
+			
+	def find_ge(self, k):
+		"""Return (key, value) tuple with least key greater or equal than k"""
+		j = self._find_index(k, 0, len(self) - 1) #key[j] >= k
+		if j < len(self):
+			return (self._table[j]._key, self._table[j]._value) 
+		else:
+			return None
+
+	def find_gt(self, k):
+		"""Return (key, value) tuple with least key strictly greater than k"""
+		j = self._find_index(k, 0, len(self) - 1) #key[j] >= k
+		if j < len(self) and self._table[j]._key == k:
+			j += 1 #Advanced past match
+		if j < len(self):
+			return (self._table[j]._key, self._table[j]._value)
+		else:
+			return None
+
+	def find_lt(self, k):
+		"""Return (key, value) tuple with max key strictly smaller than k"""
+		j = self._find_index(k, 0, len(self) - 1) #key[j] >= k
+		if j > 0:
+			return (self._table[j - 1]._key, self._table[j - 1]._value) 
+		else:
+			return None	
+
+	def find_range(self, start, stop):
+		"""Iterate all keys such that start <= key <= stop.
+		If start is None, begin from mininum key of map.
+		If stop is None, iterate until greatest key."""
+		if start is None:
+			j = 0
+		else:
+			j = self._find_index(start, 0, len(self) - 1)
+		while j < len(self) and (stop is None or self._table[j]._key < stop):
+			yield (self._table[j]._key, self._table[j]._value)
+			j += 1
 
 
-
-
-
-
-
-
-
-
-###à########################UNIT TEST######################################
+###à######################## UNIT TEST ######################################
 if __name__ == "__main__":
 	test = SortedTableMap()
 	test[23] = 45
 	test[1] = 22
-	test[47] = 12\
+	test[47] = 12
 	#del test["a"]
-	print(list(iter(test)))
+	print(list(test.find_range(1, 25)))
