@@ -61,7 +61,7 @@ class UnsortedTableMap(MapBase):
 
 class HashMapBase(MapBase):
 	"""Abstract base class for hash-based maps using MAD compression.
-	Relies on concrete _bucket_getitem, _buckt_setitem and _bucket_delitem"""
+	Relies on concrete _bucket_getitem, _bucket_setitem and _bucket_delitem"""
 	def __init__(self, cap = 11, p = 109345121):
 		"""Create an empty hash-table map.
 		Parameters.
